@@ -2,12 +2,11 @@
 import pandas as pd
 import re
 
-from sklearn.feature_extraction.text import TfidfVectorizer
 
 """
 preprocessing
 """
-df = pd.read_csv("/home/illia/PycharmProjects/CommentGuard_ML/src/data/raw/youtoxic_english_1000.csv")
+df = pd.read_csv("src/data/raw/youtoxic_english_1000.csv")
 
 df['Text'] = df['Text'].str.lower().str.strip()
 
@@ -80,7 +79,6 @@ df['Text'] = df['Text'].map(lambda com : clean_text(com))
 
 print(df)
 
+processed_path = "src/data/processed/prepocessed_data.csv"
 
-vect = TfidfVectorizer(max_features=5000, stop_words='english')
-X = vect.fit_transform(df['Text'])
-Y = df["Toxic"]
+df.to_csv(processed_path, index=False)
