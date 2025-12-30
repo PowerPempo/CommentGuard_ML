@@ -25,7 +25,7 @@ CommentGuard explores how classical and modern NLP techniques can be applied to 
 # 🧠Project Development Philosophy
 
 - This project follows a systematic machine learning lifecycle, illustrated below.
-- ![ML project lifecycle](ML_Logic.png)
+- ![ML project lifecycle](src/data/images/ML_Logic.png)
 
 - The workflow emphasizes:
  
