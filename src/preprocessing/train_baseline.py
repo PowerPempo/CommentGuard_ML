@@ -79,6 +79,6 @@ df['Text'] = df['Text'].map(lambda com : clean_text(com))
 
 print(df)
 
-processed_path = "src/data/processed/prepocessed_data.csv"
+processed_path = "src/data/processed/preprocessed_data.csv"
 
 df.to_csv(processed_path, index=False)

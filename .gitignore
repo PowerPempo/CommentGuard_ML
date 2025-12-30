@@ -145,4 +145,5 @@ pip-selfcheck.json
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/vcs.xml
-/img.png
+/ML_Logic.png
+/src/data/processed/preprocessed_data.csv
