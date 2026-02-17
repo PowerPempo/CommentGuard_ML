@@ -1,41 +1,57 @@
+from numpy.ma.extras import average
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import make_scorer, f1_score
 from sklearn.pipeline import Pipeline
-
-from sklearn.model_selection import KFold, cross_val_score
+from sklearn.model_selection import cross_val_score, cross_validate
+from skmultilearn.model_selection import IterativeStratification
+import numpy as np
 from sklearn.multiclass import OneVsRestClassifier
-RANDOM_STATE = 42
+RANDOM_STATE = 52
+PREDICTION_THRESHOLD = 0.3
+# df = load_dataframe("src/data/raw/youtoxic_english_1000.csv")
 LABELS = [
-    'IsToxic','IsAbusive','IsThreat','IsProvocative',
-    'IsObscene','IsHatespeech','IsRacist','IsNationalist',
-    'IsSexist','IsHomophobic','IsReligiousHate','IsRadicalism'
+    'toxic',
+    'severe_toxic',
+    'obscene',
+    'threat',
+    'insult',
+    'identity_hate'
 ]
 
+DATA_PATH = "src/data/processed/train_W.csv"
 
 
 
-
-def load_data(path="src/data/processed/preprocessed_data.csv"):
-    df = pd.read_csv(path)
-    df = df.dropna(subset=['Text'])
+def load_data(DATA_PATH):
+    df = pd.read_csv(DATA_PATH)
+    df = df.dropna(subset=['text'])
     df[LABELS] = df[LABELS].astype(int)
-    X = df['Text'].astype(str)
-    y = df[LABELS]
-    return X , y
+    active_labels = [col for col in LABELS if df[col].sum()> 0]
+
+
+    X = df['text'].astype(str)
+    y = df[active_labels]
+    return X , y, df, active_labels
+
+
 
 
 def base_pipeline():
     pipe = Pipeline([
-        ('vect', TfidfVectorizer(max_features=5000,
+        ('vect', TfidfVectorizer(max_features=30000,
                                  ngram_range=(1,2),
+                                 min_df=3,
+                                 max_df=0.9,
+                                 sublinear_tf=True,
                                  stop_words="english")),
         ("clf", OneVsRestClassifier(
             LogisticRegression(
                 solver="liblinear",
                 class_weight="balanced",
                 max_iter=1000,
-                random_state=RANDOM_STATE
+
             )
         ))
 
@@ -43,17 +59,26 @@ def base_pipeline():
     return pipe
 
 
-X, y = load_data()
+
+
+X, y, df, active_labels = load_data(DATA_PATH)
 pipe = base_pipeline()
 
-cv = KFold(n_splits=5 ,shuffle=True, random_state=RANDOM_STATE)
 
+cv = IterativeStratification(n_splits=5 ,order=1)
 
-scores = cross_val_score(pipe, X, y, cv=cv, scoring='f1_micro')
+scoring ={
+    "f1_micro": make_scorer(f1_score, average='micro'),
+    "f1_macro": make_scorer(f1_score, average='macro'),
+    "f1-weighted": make_scorer(f1_score, average='weighted'),
+
+}
+
+scores = cross_validate(pipe, X, y, cv=cv, scoring=scoring, return_train_score=False)
 
 print(scores)
-print(scores.mean())
-# print(y.sum().sort_values())
+# print(scores.mean())
+print(y.sum().sort_values())
 # IsHomophobic         0
 # IsRadicalism         0
 # IsSexist             1
@@ -67,4 +92,5 @@ print(scores.mean())
 # IsAbusive          348
 # IsToxic            457
 # dtype: int64
+
 

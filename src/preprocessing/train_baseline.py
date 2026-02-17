@@ -3,20 +3,27 @@ import pandas as pd
 import re
 
 
+
+
 """
 preprocessing
 """
-df = pd.read_csv("src/data/raw/youtoxic_english_1000.csv")
-
-df['Text'] = df['Text'].str.lower().str.strip()
-
+JIG_PATH = "src/data/raw/train.csv"
+DATA_PATH = "src/data/raw/youtoxic_english_1000.csv"
+PROCESSED_PATH = "src/data/processed/preprocessed_W_args.csv"
+df = pd.read_csv(JIG_PATH)
+df.rename(columns={'comment_text': 'text'}, inplace=True)
+df.to_csv(JIG_PATH)
+df['text'] = df['text'].str.lower().str.strip()
+# new_df = pd.read_csv(JIG_PATH)
+# print(new_df.describe())
 # print(df.describe())
 # print(df.dtypes)
 # print(df.isnull().sum())
 
 
 
-duplicate_rows = df[df.duplicated(subset=['Text'], keep=False)]
+duplicate_rows = df[df.duplicated(subset=['text'], keep=False)]
 # print('Duplicate rows based on "Text" column:')
 # print(duplicate_rows)
 
@@ -30,7 +37,7 @@ duplicate_rows = df[df.duplicated(subset=['Text'], keep=False)]
 """
 
 
-df.drop_duplicates(subset=["Text"],  keep="first", inplace=True)
+df.drop_duplicates(subset=["text"],  keep="first", inplace=True)
 
 df.reset_index(drop=True , inplace=True)
 
@@ -69,16 +76,48 @@ def clean_text(text):
     text = re.sub(r"\'d", " would ", text)
     text = re.sub(r"\'ll", " will ", text)
     text = re.sub(r"\'scuse", " excuse ", text)
-    text = re.sub('\W', ' ', text)
+    text = re.sub(r"[^a-z\s]", " ", text)
     text = re.sub('\s+', ' ', text)
     text = text.strip(' ')
     return text
 
 'Important part to previous function to make every elem in "Text" to be cleaned by function'
-df['Text'] = df['Text'].map(lambda com : clean_text(com))
+df['text'] = df['text'].map(lambda com : clean_text(com))
 
 print(df)
 
 processed_path = "src/data/processed/preprocessed_data.csv"
 
-df.to_csv(processed_path, index=False)
+
+
+"""
+data load
+"""
+
+
+
+
+
+HATE_LABELS = [
+    "IsRacist",
+    "IsNationalist",
+    "IsReligiousHate",
+    "IsHomophobic",
+    "IsSexist",
+    "IsHatespeech"
+]
+
+SEVERE_THREAT_LABELS = [
+    "IsThreat",
+    "IsRadicalism"
+]
+
+
+# df["IsHateSpeechAny"] = df[HATE_LABELS].max(axis=1)
+# df["IsSevereThreat"] = df[SEVERE_THREAT_LABELS].max(axis=1)
+
+df.to_csv(PROCESSED_PATH, index=False)
+print(PROCESSED_PATH, 'COMPLETED')
+print(df.columns)
+print(df.sample(5))
+# df.to_csv('train_W.csv' )
