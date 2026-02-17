@@ -1,9 +1,7 @@
 
-import pandas as pd
 import re
 
-
-
+import pandas as pd
 
 """
 preprocessing
@@ -111,7 +109,6 @@ SEVERE_THREAT_LABELS = [
     "IsThreat",
     "IsRadicalism"
 ]
-
 
 # df["IsHateSpeechAny"] = df[HATE_LABELS].max(axis=1)
 # df["IsSevereThreat"] = df[SEVERE_THREAT_LABELS].max(axis=1)
