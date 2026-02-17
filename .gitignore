@@ -145,5 +145,5 @@ pip-selfcheck.json
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/vcs.xml
-
+src/data/raw/train.csv
 /src/data/processed/preprocessed_data.csv
