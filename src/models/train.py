@@ -1,3 +1,4 @@
+from sklearn.model_selection import train_test_split
 from numpy.ma.extras import average
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
@@ -8,8 +9,11 @@ from sklearn.model_selection import cross_val_score, cross_validate
 from skmultilearn.model_selection import IterativeStratification
 import numpy as np
 from sklearn.multiclass import OneVsRestClassifier
+from sklearn.model_selection import GridSearchCV
+import joblib
+import json
 RANDOM_STATE = 52
-PREDICTION_THRESHOLD = 0.3
+# PREDICTION_THRESHOLD = 0.3
 # df = load_dataframe("src/data/raw/youtoxic_english_1000.csv")
 LABELS = [
     'toxic',
@@ -38,19 +42,25 @@ def load_data(DATA_PATH):
 
 
 
+
+
+
+
+
 def base_pipeline():
     pipe = Pipeline([
-        ('vect', TfidfVectorizer(max_features=30000,
+        ('vect', TfidfVectorizer(max_features=50000,
                                  ngram_range=(1,2),
                                  min_df=3,
                                  max_df=0.9,
-                                 sublinear_tf=True,
+                                 sublinear_tf =True,
                                  stop_words="english")),
         ("clf", OneVsRestClassifier(
             LogisticRegression(
                 solver="liblinear",
+                C=5.0,
                 class_weight="balanced",
-                max_iter=1000,
+                max_iter=500,
 
             )
         ))
@@ -60,37 +70,29 @@ def base_pipeline():
 
 
 
+if __name__ == "__main__":
+    X, y, df, active_labels = load_data(DATA_PATH)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state = RANDOM_STATE
+    )
+    pipe = base_pipeline()
 
-X, y, df, active_labels = load_data(DATA_PATH)
-pipe = base_pipeline()
+    pipe.fit(X_train, y_train)
+    y_pred = pipe.predict(X_test)
+    from sklearn.metrics import classification_report
+    print(classification_report(y_test, y_pred, target_names=active_labels))
 
 
-cv = IterativeStratification(n_splits=5 ,order=1)
+    pipe.fit(X, y)
+    joblib.dump(pipe, 'CommentGuard_ML.pkl')
 
-scoring ={
-    "f1_micro": make_scorer(f1_score, average='micro'),
-    "f1_macro": make_scorer(f1_score, average='macro'),
-    "f1-weighted": make_scorer(f1_score, average='weighted'),
+    with open('labels.json', 'w') as f:
+        json.dump(active_labels, f)
 
-}
+    print("Saved")
+    print(y.sum().sort_values())
 
-scores = cross_validate(pipe, X, y, cv=cv, scoring=scoring, return_train_score=False)
 
-print(scores)
-# print(scores.mean())
-print(y.sum().sort_values())
-# IsHomophobic         0
-# IsRadicalism         0
-# IsSexist             1
-# IsNationalist        8
-# IsReligiousHate     12
-# IsThreat            20
-# IsObscene          100
-# IsRacist           125
-# IsHatespeech       138
-# IsProvocative      157
-# IsAbusive          348
-# IsToxic            457
-# dtype: int64
+
 
 
