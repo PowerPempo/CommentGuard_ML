@@ -1,6 +1,19 @@
-import pickle
+import joblib
 
 class BanModel:
-    def __init__(self,model_path: str = 'CommentGuard_ML'):
-        with open(model_path , 'rb') as f:
-            self.model = pickle.load(model_path)
+    def __init__(self,model_path: str = 'CommentGuard_ML.pkl'):
+            self.model = joblib.load(model_path)
+
+
+
+    def predict(self, text: str) -> dict:
+        proba = self.model.predict.proba([text])[0],[1]
+        return {
+            'is_banned': proba > 0.5,
+            'confidence': round(float(proba), 4)
+        }
+
+
+ban_model = BanModel()
+
+
