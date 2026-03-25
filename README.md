@@ -148,17 +148,18 @@ Evaluation focuses on multilabel-aware metrics:
 
 ✅ Pipeline-based training
 
+
+✅ Improving performance on rare labels
+
+✅ Metric comparison and threshold tuning
 ## Work in Progress
-
-🔄 Improving performance on rare labels
-
-🔄 Metric comparison and threshold tuning
-
-#### __Planned__:
 
 - DistilBERT / RoBERTa fine-tuning
 
 - FastAPI inference service
+
+#### __Planned__:
+
 
 - Model monitoring and retraining
 

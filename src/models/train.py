@@ -1,17 +1,12 @@
-from sklearn.model_selection import train_test_split
-from numpy.ma.extras import average
-from sklearn.feature_extraction.text import TfidfVectorizer
-import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import make_scorer, f1_score
-from sklearn.pipeline import Pipeline
-from sklearn.model_selection import cross_val_score, cross_validate
-from skmultilearn.model_selection import IterativeStratification
-import numpy as np
-from sklearn.multiclass import OneVsRestClassifier
-from sklearn.model_selection import GridSearchCV
-import joblib
 import json
+import joblib
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.pipeline import Pipeline
+
 RANDOM_STATE = 52
 # PREDICTION_THRESHOLD = 0.3
 # df = load_dataframe("src/data/raw/youtoxic_english_1000.csv")
