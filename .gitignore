@@ -147,6 +147,6 @@ pip-selfcheck.json
 /.idea/vcs.xml
 /src/data/raw/train.csv
 /src/data/processed/preprocessed_data.csv
-/CommentGuard_ML.pkl
+/src/models/project_models/CommentGuard_ML.pkl
 /.idea
 
